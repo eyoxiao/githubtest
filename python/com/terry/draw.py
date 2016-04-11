@@ -18,6 +18,7 @@ pl.show()
 '''
 
 import numpy as np
+from numpy.random import randn 
 import matplotlib.pyplot as plt
 
 
@@ -33,7 +34,31 @@ def getsubplot():
     for idx, color in enumerate("rgbyck"):
         plt.subplot(320+idx+1, axisbg=color)
     plt.show()
+    
+def getsubplot1():
+    fig = plt.figure()
+    ax1 = fig.add_subplot(221)
+    ax2 = fig.add_subplot(222)
+    ax3 = fig.add_subplot(223)
+    
+    ax1.hist(randn(100),bins=20,color='k',alpha=0.3)
+    ax2.scatter(np.arange(30),np.arange(30)+3*randn(30))
+    ax3.plot(randn(50).cumsum(),'k--')
+    
+    fig.show()
 
+def getLabels():
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(randn(1000).cumsum(),'k',label='one')
+    ax.plot(randn(1000).cumsum(),'k--',label='two')
+    ax.set_xticks([0,250,500,750,1000])
+    ax.set_xticklabels(['one','two','three','four','five'])
+    ax.set_xlabel('Stages')
+    ax.legend(loc='best')
+    fig.show()
+    
+    
 def getsincos():
     x = np.linspace(0, 10, 1000)
     y = np.sin(x)
@@ -50,4 +75,6 @@ def getsincos():
     plt.show()
     
     
-getscatter()
+#getscatter()
+#getsubplot1()
+getLabels()
