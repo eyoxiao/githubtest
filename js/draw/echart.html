@@ -80,9 +80,12 @@
 		]
 	};
 	myChart.setOption(option);
-	myChart.on('click',function(param){
+	//echarts.config = require('echarts/config');
+	var ecfg = echarts.config;
+	myChart.on(ecfg.EVENT.CLICK,function(param){
+		console.log(param.seriesIndex);
 		console.log(data_category[param.dataIndex]);
-		window.location.href = "http://www.baidu.com";
+		//window.location.href = "http://www.baidu.com";
 		//window.open("http://www.baidu.com");
         //alert('click me!');
 	});
