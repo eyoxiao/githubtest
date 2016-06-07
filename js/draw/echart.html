@@ -80,6 +80,12 @@
 		]
 	};
 	myChart.setOption(option);
+	myChart.on('click',function(param){
+		console.log(data_category[param.dataIndex]);
+		window.location.href = "http://www.baidu.com";
+		//window.open("http://www.baidu.com");
+        //alert('click me!');
+	});
 
 </script>
 </body>
