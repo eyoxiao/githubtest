@@ -5,12 +5,12 @@
 	<title>Echart Test</title>
 </head>
 <body>
-<div id="charttest" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+
+<!-- <div id="charttest" style="height:500px;border:1px solid #ccc;padding:10px;"></div> -->
 
 <script src="js/echarts-all.js"></script>
 <script type="text/javascript">
-	var myChart = echarts.init(document.getElementById("charttest"));
-	var data_category = [
+    var data_category = [
 	              'EmergencyCallOrigination',
 	              'EmergencyCallOriginationFailure',
 	              'EmergencyCallHandover',
@@ -20,7 +20,32 @@
 	              'SLg_CellRoutingQuerySucc',
 	              'SLg_DefaultRoutingQuerySucc'
 	            ];
-	var data_value = [43,32,27,56,41,76,18,25];
+
+	var data_value = [
+	                    [43,32,27,56,41,76,18,25],
+	                    [50,32,27,56,41,76,18,25]
+	                 ];
+
+	var cellname = ['cell1','cell2'];
+
+    
+    for(var i=0;i<data_value.length;i++){
+    var mydiv = document.createElement("div");
+    mydiv.id = "charttest"+i;
+    console.log(mydiv.id);
+    mydiv.style.height = "500px";
+    mydiv.style.border = "1px solid #ccc";
+    mydiv.style.padding = "10px";
+    (function(){
+       var t = i;
+       mydiv.onclick = function(){console.log(cellname[t])};
+    })();
+    document.body.appendChild(mydiv);
+
+
+
+	var myChart = echarts.init(document.getElementById("charttest"+i));
+
 	var option = {
 		tooltip:{
 			trigger:'axis'
@@ -49,7 +74,10 @@
 			{
 				type:'category',
 				//data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
-				data:data_category
+				data:data_category,
+				textStyle:{
+					color:'blue'
+				}
 			}
 
 		],
@@ -65,10 +93,11 @@
                 name:'om',
                 type:'bar',
                 //data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
-                data:data_value,
+                data:data_value[i],
                 itemStyle:{
                 	normal:{
-                		color:'#0000EE'
+                		//color:'#0000EE'
+                		color:'blue'
                 		//barBorderColor:'#006400'
 
                 	},
@@ -80,15 +109,17 @@
 		]
 	};
 	myChart.setOption(option);
+
 	//echarts.config = require('echarts/config');
-	var ecfg = echarts.config;
-	myChart.on(ecfg.EVENT.CLICK,function(param){
-		console.log(param.seriesIndex);
-		console.log(data_category[param.dataIndex]);
+	//var ecfg = echarts.config;
+	//myChart.on(ecfg.EVENT.CLICK,function(param){
+		//console.log(param.seriesIndex);
+		//console.log(data_category[param.dataIndex]);
 		//window.location.href = "http://www.baidu.com";
 		//window.open("http://www.baidu.com");
         //alert('click me!');
-	});
+	//});
+}
 
 </script>
 </body>
