@@ -1,0 +1,137 @@
+<!doctype html>
+<html lan="en">
+<head>
+	<meta charset="utf-8">
+	<title>Echart Test</title>
+</head>
+<body>
+	<div>
+		<select id= "fileType" onchange="updateCellChart(this)">
+        </select>
+	</div>
+
+<div id="charttest" style="height:500px;border:1px solid #ccc;padding:10px;">
+
+<script src="js/echarts-all.js"></script>
+<script type="text/javascript">
+    var data_category = [
+	              'EmergencyCallOrigination',
+	              'EmergencyCallOriginationFailure',
+	              'EmergencyCallHandover',
+	              'EmergencyCallHandoverSRVCC',
+	              'EmergencyCallDuration',
+	              'SLg_CellRoutingInfoMissing',
+	              'SLg_CellRoutingQuerySucc',
+	              'SLg_DefaultRoutingQuerySucc'
+	            ];
+
+	var data_value = [
+	                    [43,32,27,56,41,76,18,25],
+	                    [50,32,27,56,41,76,18,25]
+	                 ];
+
+	var cellname = ['26208093B5229','26208093B522B'];
+
+	var options = cellname;
+     var select = document.getElementById("fileType");
+     for(var i=0;i<options.length;i++){
+     	var option = document.createElement("option");
+     	option.value = options[i];
+     	option.text = options[i];
+
+     	try{
+            select.add(option,null);
+     	}catch(ex){
+     		select.add(option);
+     	}
+     }
+
+ 
+     drawChart(select.selectedIndex);
+
+    function drawChart(index){
+	var myChart = echarts.init(document.getElementById("charttest"));
+
+	var option = {
+		tooltip:{
+			trigger:'axis'
+		},
+		legend:{
+			data:[cellname[index]]
+		},
+		grid:{
+             x:200,
+             backgroundColor:'#7FFFD4'
+		},
+		/**
+		toolbox: {
+            show : true,
+            feature : {
+                mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        */
+		calculable:true,
+		yAxis:[
+			{
+				type:'category',
+				//data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+				data:data_category,
+				textStyle:{
+					color:'blue'
+				}
+			}
+
+		],
+		xAxis:[
+			{
+				type:'value',
+				//splitArea : {show : true}
+				boundaryGap : [0, 0.01]
+			}
+		],
+		series:[
+			{
+                name:cellname[index],
+                type:'bar',
+                //data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                data:data_value[index],
+                itemStyle:{
+                	normal:{
+                		//color:'#0000EE'
+                		color:'blue'
+                		//barBorderColor:'#006400'
+
+                	},
+                	emphasis:{
+
+                	}
+                }
+            }
+		]
+	};
+	myChart.setOption(option);
+    }
+
+    function updateCellChart(obj){
+    	drawChart(obj.selectedIndex);
+    }
+
+	//echarts.config = require('echarts/config');
+	//var ecfg = echarts.config;
+	//myChart.on(ecfg.EVENT.CLICK,function(param){
+		//console.log(param.seriesIndex);
+		//console.log(data_category[param.dataIndex]);
+		//window.location.href = "http://www.baidu.com";
+		//window.open("http://www.baidu.com");
+        //alert('click me!');
+	//});
+
+
+</script>
+</body>
+</html>
