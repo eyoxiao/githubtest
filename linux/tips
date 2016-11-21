@@ -9,3 +9,248 @@ RAID5
 spare disk
 -----------
 mkadm:
+----------
+[root@terrycentos dev]# fdisk -l /dev/sdb
+
+Disk /dev/sdb: 21.5 GB, 21474836480 bytes, 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0xb80ea3fd
+
+   Device Boot      Start         End      Blocks   Id  System
+   /dev/sdb1            2048     2099199     1048576   83  Linux
+   /dev/sdb2         2099200     4196351     1048576   8e  Linux LVM
+   /dev/sdb3         4196352    10487807     3145728    5  Extended
+   /dev/sdb5         4198400     5246975      524288   83  Linux
+   /dev/sdb6         5249024     7346175     1048576   83  Linux
+   /dev/sdb7         7348224     9445375     1048576   83  Linux
+   /dev/sdb8         9447424    10487807      520192   83  Linux
+[root@terrycentos dev]#
+
+[root@terrycentos dev]# mdadm --create --auto=yes /dev/md0 --level=5 --raid-devices=3 --spare-devices=1 /dev/sdb{5,6,7,8}
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+[root@terrycentos dev]# 
+[root@terrycentos dev]# mdadm --detail /dev/md0
+/dev/md0:
+        Version : 1.2
+	  Creation Time : Mon Nov 21 09:15:38 2016
+	       Raid Level : raid5
+	            Array Size : 1046528 (1022.17 MiB 1071.64 MB)
+		      Used Dev Size : 523264 (511.09 MiB 535.82 MB)
+		         Raid Devices : 3
+			   Total Devices : 4
+			       Persistence : Superblock is persistent
+
+			           Update Time : Mon Nov 21 09:15:41 2016
+				             State : clean 
+					      Active Devices : 3
+					      Working Devices : 4
+					       Failed Devices : 0
+					         Spare Devices : 1
+
+				Layout : left-symmetric
+		Chunk Size : 512K
+
+	 Name : terrycentos:0  (local to host terrycentos)
+	UUID : 7a61756c:bc5b53f4:fe22e61a:d6db4835
+	Events : 18
+
+											          Number   Major   Minor   RaidDevice State
+												0       8       21        0      active sync   /dev/sdb5											
+1       8       22        1      active sync   /dev/sdb6
+												4       8       23        2      active sync   /dev/sdb7								
+3       8       24        -      spare   /dev/sdb8
+												[root@terrycentos dev]# 
+												[root@terrycentos dev]# cat /proc/mdstat
+												Personalities : [raid6] [raid5] [raid4] 
+												md0 : active raid5 sdb7[4] sdb8[3](S) sdb6[1] sdb5[0]
+												      1046528 blocks super 1.2 level 5, 512k chunk, algorithm 2 [3/3] [UUU]
+												            
+													    unused devices: <none>
+
+[root@terrycentos dev]# blkid
+/dev/sda1: UUID="895ac251-922d-4bdc-a653-7a72e2871779" TYPE="xfs" 
+/dev/sda2: UUID="001be38b-4dd9-46c8-80ca-0bfa60c7964d" TYPE="xfs" 
+/dev/sda3: UUID="88974970-bd52-42fa-b682-0bf3dc57b21a" TYPE="swap" 
+/dev/sdb5: UUID="7a61756c-bc5b-53f4-fe22-e61ad6db4835" UUID_SUB="fa843832-b65c-7a9f-4591-71202a013ab9" LABEL="terrycentos:0" TYPE="linux_raid_member" 
+/dev/sdb6: UUID="7a61756c-bc5b-53f4-fe22-e61ad6db4835" UUID_SUB="300ca1dd-2f1f-15a3-782c-da56fc0cf887" LABEL="terrycentos:0" TYPE="linux_raid_member" 
+/dev/sdb7: UUID="7a61756c-bc5b-53f4-fe22-e61ad6db4835" UUID_SUB="45cbfe87-3863-1dbf-ed6b-64c6f511edd2" LABEL="terrycentos:0" TYPE="linux_raid_member" 
+/dev/sdb8: UUID="7a61756c-bc5b-53f4-fe22-e61ad6db4835" UUID_SUB="96734549-35d2-df58-3a49-ea9d549b047b" LABEL="terrycentos:0" TYPE="linux_raid_member" 
+[root@terrycentos dev]# 
+[root@terrycentos dev]# cat /etc/fstab
+
+#
+# /etc/fstab
+# Created by anaconda on Sun Nov 20 14:55:14 2016
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+UUID=001be38b-4dd9-46c8-80ca-0bfa60c7964d /                       xfs     defaults        0 0
+UUID=895ac251-922d-4bdc-a653-7a72e2871779 /boot                   xfs     defaults        0 0
+UUID=88974970-bd52-42fa-b682-0bf3dc57b21a swap                    swap    defaults        0 0
+[root@terrycentos dev]# 
+[root@terrycentos dev]# mkfs -t ext4 /dev/md0
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=128 blocks, Stripe width=256 blocks
+65408 inodes, 261632 blocks
+13081 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=268435456
+8 block groups
+32768 blocks per group, 32768 fragments per group
+8176 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376
+
+	Allocating group tables: done                            
+	Writing inode tables: done                            
+	Creating journal (4096 blocks): done
+	Writing superblocks and filesystem accounting information: done
+
+	[root@terrycentos dev]# 
+	[root@terrycentos dev]# mkdir /mnt/raid
+	[root@terrycentos dev]# 
+	[root@terrycentos dev]# mount /dev/md0 /mnt/raid
+	[root@terrycentos dev]# 
+	[root@terrycentos dev]# df -h
+	Filesystem      Size  Used Avail Use% Mounted on
+	/dev/sda2        15G  3.5G   12G  24% /
+	devtmpfs        475M     0  475M   0% /dev
+	tmpfs           489M  156K  489M   1% /dev/shm
+	tmpfs           489M  7.1M  482M   2% /run
+	tmpfs           489M     0  489M   0% /sys/fs/cgroup
+	/dev/sda1      1020M  161M  860M  16% /boot
+	tmpfs            98M  8.0K   98M   1% /run/user/1000
+	/dev/md0        990M  2.6M  921M   1% /mnt/raid
+	[root@terrycentos dev]# 
+	[root@terrycentos dev]# df -hT
+	Filesystem     Type      Size  Used Avail Use% Mounted on
+	/dev/sda2      xfs        15G  3.5G   12G  24% /
+	devtmpfs       devtmpfs  475M     0  475M   0% /dev
+	tmpfs          tmpfs     489M  156K  489M   1% /dev/shm
+	tmpfs          tmpfs     489M  7.1M  482M   2% /run
+	tmpfs          tmpfs     489M     0  489M   0% /sys/fs/cgroup
+	/dev/sda1      xfs      1020M  161M  860M  16% /boot
+	tmpfs          tmpfs      98M  8.0K   98M   1% /run/user/1000
+	/dev/md0       ext4      990M  2.6M  921M   1% /mnt/raid
+	[root@terrycentos dev]# 
+
+[root@terrycentos dev]# ls /mnt/raid
+lost+found
+[root@terrycentos dev]# cp -a /etc /var/log /mnt/raid
+[root@terrycentos dev]# ls /mnt/raid
+etc  log  lost+found
+[root@terrycentos dev]# 
+[root@terrycentos dev]# ls -l /mnt/raid
+total 32
+drwxr-xr-x. 130 root root 12288 Nov 20 17:11 etc
+drwxr-xr-x.  16 root root  4096 Nov 21 08:12 log
+drwx------.   2 root root 16384 Nov 21 10:27 lost+found
+[root@terrycentos dev]# 
+[root@terrycentos dev]# mdadm --manage /dev/md0 --fail /dev/sdb5
+mdadm: set /dev/sdb5 faulty in /dev/md0
+[root@terrycentos dev]# 
+[root@terrycentos dev]# mdadm --detail /dev/md0
+/dev/md0:
+        Version : 1.2
+	  Creation Time : Mon Nov 21 09:15:38 2016
+	       Raid Level : raid5
+	            Array Size : 1046528 (1022.17 MiB 1071.64 MB)
+		      Used Dev Size : 523264 (511.09 MiB 535.82 MB)
+		         Raid Devices : 3
+			   Total Devices : 4
+			       Persistence : Superblock is persistent
+
+			           Update Time : Mon Nov 21 10:45:00 2016
+				             State : clean 
+					      Active Devices : 3
+					      Working Devices : 3
+					       Failed Devices : 1
+					         Spare Devices : 0
+
+						          Layout : left-symmetric
+							       Chunk Size : 512K
+
+							                  Name : terrycentos:0  (local to host terrycentos)
+									             UUID : 7a61756c:bc5b53f4:fe22e61a:d6db4835
+										              Events : 37
+
+											          Number   Major   Minor   RaidDevice State
+												         3       8       24        0      active sync   /dev/sdb8
+													        1       8       22        1      active sync   /dev/sdb6
+														       4       8       23        2      active sync   /dev/sdb7
+
+														              0       8       21        -      faulty   /dev/sdb5
+															      [root@terrycentos dev]# 
+															      [root@terrycentos dev]# ls -l /mnt/raid
+															      total 32
+															      drwxr-xr-x. 130 root root 12288 Nov 20 17:11 etc
+															      drwxr-xr-x.  16 root root  4096 Nov 21 08:12 log
+															      drwx------.   2 root root 16384 Nov 21 10:27 lost+found
+															      [root@terrycentos dev]# 
+															      [root@terrycentos dev]# 
+[root@terrycentos dev]# mdadm --manage /dev/md0 --add /dev/sdb9 --remove /dev/sdb5
+mdadm: added /dev/sdb9
+mdadm: hot removed /dev/sdb5 from /dev/md0
+[root@terrycentos dev]# 
+[root@terrycentos dev]# mdadm --detail /dev/md0
+/dev/md0:
+        Version : 1.2
+	  Creation Time : Mon Nov 21 09:15:38 2016
+	       Raid Level : raid5
+	            Array Size : 1046528 (1022.17 MiB 1071.64 MB)
+		      Used Dev Size : 523264 (511.09 MiB 535.82 MB)
+		         Raid Devices : 3
+			   Total Devices : 4
+			       Persistence : Superblock is persistent
+
+			           Update Time : Mon Nov 21 10:52:32 2016
+				             State : clean 
+					      Active Devices : 3
+					      Working Devices : 4
+					       Failed Devices : 0
+					         Spare Devices : 1
+
+						          Layout : left-symmetric
+							       Chunk Size : 512K
+
+							                  Name : terrycentos:0  (local to host terrycentos)
+									             UUID : 7a61756c:bc5b53f4:fe22e61a:d6db4835
+										              Events : 38
+
+											          Number   Major   Minor   RaidDevice State
+												         3       8       24        0      active sync   /dev/sdb8
+													        1       8       22        1      active sync   /dev/sdb6
+														       4       8       23        2      active sync   /dev/sdb7
+
+														              5       8       25        -      spare   /dev/sdb9
+															      [root@terrycentos dev]# 
+															      [root@terrycentos dev]# 
+
+[root@terrycentos dev]# echo "ARRAY /dev/md0 UUID=7a61756c:bc5b53f4:fe22e61a:d6db4835" >> /etc/mdadm.conf
+[root@terrycentos dev]# 
+[root@terrycentos dev]# cat /etc/mdadm.conf
+ARRAY /dev/md0 UUID=7a61756c:bc5b53f4:fe22e61a:d6db4835
+[root@terrycentos dev]# umount /dev/md0
+[root@terrycentos dev]# mount -a
+[root@terrycentos dev]# 
+[root@terrycentos dev]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda2        15G  3.5G   12G  24% /
+devtmpfs        475M     0  475M   0% /dev
+tmpfs           489M  156K  489M   1% /dev/shm
+tmpfs           489M  7.1M  482M   2% /run
+tmpfs           489M     0  489M   0% /sys/fs/cgroup
+/dev/sda1      1020M  161M  860M  16% /boot
+tmpfs            98M  8.0K   98M   1% /run/user/1000
+/dev/md0        990M   36M  888M   4% /mnt/raid
+[root@terrycentos dev]# 
+
