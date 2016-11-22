@@ -257,6 +257,411 @@ tmpfs            98M  8.0K   98M   1% /run/user/1000
 =============================
 LVM
 ====
+[root@terrycentos Packages]# fdisk -l /dev/sdb
+
+Disk /dev/sdb: 21.5 GB, 21474836480 bytes, 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0xb80ea3fd
+
+Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048     2099199     1048576   83  Linux
+/dev/sdb2         2099200     4196351     1048576   8e  Linux LVM
+/dev/sdb3         4196352    10487807     3145728    5  Extended
+/dev/sdb5         4198400     5246975      524288   83  Linux
+/dev/sdb6         5249024     6297599      524288   83  Linux
+/dev/sdb7         6299648     7348223      524288   83  Linux
+/dev/sdb8         7350272     8398847      524288   83  Linux
+/dev/sdb9         8400896     9449471      524288   83  Linux
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# pvcreate /dev/md0 /dev/sdb1 /dev/sdb2
+WARNING: ext4 signature detected on /dev/md0 at offset 1080. Wipe it? [y/n]: y
+Wiping ext4 signature on /dev/md0.
+Physical volume "/dev/md0" successfully created
+Physical volume "/dev/sdb1" successfully created
+Physical volume "/dev/sdb2" successfully created
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# pvdisplay
+"/dev/sdb2" is a new physical volume of "1.00 GiB"
+--- NEW Physical volume ---
+PV Name               /dev/sdb2
+VG Name               
+PV Size               1.00 GiB
+Allocatable           NO
+PE Size               0   
+Total PE              0
+Free PE               0
+Allocated PE          0
+PV UUID               a0hGbN-HavD-TpsE-mTxF-ulc1-3UFU-BseZIF
+
+"/dev/sdb1" is a new physical volume of "1.00 GiB"
+--- NEW Physical volume ---
+PV Name               /dev/sdb1
+VG Name               
+PV Size               1.00 GiB
+Allocatable           NO
+PE Size               0   
+Total PE              0
+Free PE               0
+Allocated PE          0
+PV UUID               N3ZSAe-fffr-WIOo-eT6D-3tLU-fsHI-0AdbdF
+
+"/dev/md0" is a new physical volume of "1022.00 MiB"
+--- NEW Physical volume ---
+PV Name               /dev/md0
+VG Name               
+PV Size               1022.00 MiB
+Allocatable           NO
+PE Size               0   
+Total PE              0
+Free PE               0
+Allocated PE          0
+PV UUID               I1cQ5R-z4PK-4WPV-fKvl-m41D-y2pd-fdhMMf
+
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# pvs
+PV         VG   Fmt  Attr PSize    PFree   
+/dev/md0        lvm2 ---  1022.00m 1022.00m
+/dev/sdb1       lvm2 ---     1.00g    1.00g
+/dev/sdb2       lvm2 ---     1.00g    1.00g
+[root@terrycentos Packages]# pvscan
+PV /dev/sdb2         lvm2 [1.00 GiB]
+PV /dev/sdb1         lvm2 [1.00 GiB]
+PV /dev/md0          lvm2 [1022.00 MiB]
+Total: 3 [3.00 GiB] / in use: 0 [0   ] / in no VG: 3 [3.00 GiB]
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# fdisk -l /dev/sdb
+
+Disk /dev/sdb: 21.5 GB, 21474836480 bytes, 41943040 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0xb80ea3fd
+
+Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048     2099199     1048576   83  Linux
+/dev/sdb2         2099200     4196351     1048576   8e  Linux LVM
+/dev/sdb3         4196352    10487807     3145728    5  Extended
+/dev/sdb5         4198400     5246975      524288   83  Linux
+/dev/sdb6         5249024     6297599      524288   83  Linux
+/dev/sdb7         6299648     7348223      524288   83  Linux
+/dev/sdb8         7350272     8398847      524288   83  Linux
+/dev/sdb9         8400896     9449471      524288   83  Linux
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# vgcreate vg0 /dev/md0 /dev/sdb1 /dev/sdb2
+Volume group "vg0" successfully created
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# vgdisplay
+--- Volume group ---
+VG Name               vg0
+System ID             
+Format                lvm2
+Metadata Areas        3
+Metadata Sequence No  1
+VG Access             read/write
+VG Status             resizable
+MAX LV                0
+Cur LV                0
+Open LV               0
+Max PV                0
+Cur PV                3
+Act PV                3
+VG Size               2.99 GiB
+PE Size               4.00 MiB
+Total PE              765
+Alloc PE / Size       0 / 0   
+Free  PE / Size       765 / 2.99 GiB
+VG UUID               MuBUS0-oAib-5i6k-0GI6-Ugo2-XlG9-ILlWZI
+
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# vgs
+VG   #PV #LV #SN Attr   VSize VFree
+vg0    3   0   0 wz--n- 2.99g 2.99g
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# vgscan
+Reading all physical volumes.  This may take a while...
+Found volume group "vg0" using metadata type lvm2
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# lvcreate -L 1G -n lv0 vg0
+Logical volume "lv0" created.
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# lvdisplay
+--- Logical volume ---
+LV Path                /dev/vg0/lv0
+LV Name                lv0
+VG Name                vg0
+LV UUID                cE2dPu-aWt5-9qmE-hiNv-gWPe-AfHk-4OcoG5
+LV Write Access        read/write
+LV Creation host, time terrycentos, 2016-11-22 07:59:24 -0500
+LV Status              available
+# open                 0
+LV Size                1.00 GiB
+Current LE             256
+Segments               2
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     8192
+Block device           253:0
+
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# vgs
+VG   #PV #LV #SN Attr   VSize VFree
+vg0    3   1   0 wz--n- 2.99g 1.99g
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# mkfs --help
+Usage:
+mkfs [options] [-t <type>] [fs-options] <device> [<size>]
+
+Options:
+-t, --type=<type>  filesystem type; when unspecified, ext2 is used
+fs-options     parameters for the real filesystem builder
+<device>       path to the device to be used
+<size>         number of blocks to be used on the device
+-V, --verbose      explain what is being done;
+specifying -V more than once will cause a dry-run
+-V, --version      display version information and exit;
+-V as --version must be the only option
+-h, --help         display this help text and exit
+
+For more information see mkfs(8).
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# mkfs.ext4 /dev/vg0/lv0
+mke2fs 1.42.9 (28-Dec-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=128 blocks, Stripe width=256 blocks
+65536 inodes, 262144 blocks
+13107 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=268435456
+8 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks: 
+32768, 98304, 163840, 229376
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (8192 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# mkdir /mnt/lv0
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# mount /dev/vg0/lv0 /mnt/lv0
+[root@terrycentos Packages]# 
+[root@terrycentos Packages]# df -h
+Filesystem           Size  Used Avail Use% Mounted on
+/dev/sda2             15G  3.5G   12G  24% /
+devtmpfs             475M     0  475M   0% /dev
+tmpfs                489M  156K  489M   1% /dev/shm
+tmpfs                489M   14M  476M   3% /run
+tmpfs                489M     0  489M   0% /sys/fs/cgroup
+/dev/sda1           1020M  161M  860M  16% /boot
+tmpfs                 98M   12K   98M   1% /run/user/1000
+/dev/sr0             4.1G  4.1G     0 100% /mnt/cdrom
+/dev/mapper/vg0-lv0  976M  2.6M  907M   1% /mnt/lv0
+[root@terrycentos Packages]# 
+[root@terrycentos lv0]# cat /etc/fstab
+
+#
+# /etc/fstab
+# Created by anaconda on Sun Nov 20 14:55:14 2016
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+UUID=001be38b-4dd9-46c8-80ca-0bfa60c7964d /                       xfs     defaults        0 0
+UUID=895ac251-922d-4bdc-a653-7a72e2871779 /boot                   xfs     defaults        0 0
+UUID=88974970-bd52-42fa-b682-0bf3dc57b21a swap                    swap    defaults        0 0
+#/dev/md0   /mnt/raid       ext4  defaults  0  0
+/dev/vg0/lv0 /mnt/lv0  ext4 defaults 0 0
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# lvextend -L +512M /dev/vg0/lv0
+Size of logical volume vg0/lv0 changed from 1.00 GiB (256 extents) to 1.50 GiB (384 extents).
+Logical volume lv0 successfully resized.
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# lvs
+LV   VG   Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+lv0  vg0  -wi-ao---- 1.50g                                                    
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# lvdisplay
+--- Logical volume ---
+LV Path                /dev/vg0/lv0
+LV Name                lv0
+VG Name                vg0
+LV UUID                cE2dPu-aWt5-9qmE-hiNv-gWPe-AfHk-4OcoG5
+LV Write Access        read/write
+LV Creation host, time terrycentos, 2016-11-22 07:59:24 -0500
+LV Status              available
+# open                 1
+LV Size                1.50 GiB
+Current LE             384
+Segments               2
+Allocation             inherit
+Read ahead sectors     auto
+- currently set to     8192
+Block device           253:0
+
+[root@terrycentos lv0]# df -HT
+Filesystem          Type      Size  Used Avail Use% Mounted on
+/dev/sda2           xfs        17G  3.8G   13G  24% /
+devtmpfs            devtmpfs  498M     0  498M   0% /dev
+tmpfs               tmpfs     513M  160k  513M   1% /dev/shm
+tmpfs               tmpfs     513M   14M  499M   3% /run
+tmpfs               tmpfs     513M     0  513M   0% /sys/fs/cgroup
+/dev/sda1           xfs       1.1G  169M  902M  16% /boot
+tmpfs               tmpfs     103M   13k  103M   1% /run/user/1000
+/dev/sr0            iso9660   4.4G  4.4G     0 100% /mnt/cdrom
+/dev/mapper/vg0-lv0 ext4      1.1G   34M  920M   4% /mnt/lv0
+[root@terrycentos lv0]# resize2fs /dev/vg0/lv0
+resize2fs 1.42.9 (28-Dec-2013)
+Filesystem at /dev/vg0/lv0 is mounted on /mnt/lv0; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 1
+The filesystem on /dev/vg0/lv0 is now 393216 blocks long.
+
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# df -HT
+Filesystem          Type      Size  Used Avail Use% Mounted on
+/dev/sda2           xfs        17G  3.8G   13G  24% /
+devtmpfs            devtmpfs  498M     0  498M   0% /dev
+tmpfs               tmpfs     513M  160k  513M   1% /dev/shm
+tmpfs               tmpfs     513M   14M  499M   3% /run
+tmpfs               tmpfs     513M     0  513M   0% /sys/fs/cgroup
+/dev/sda1           xfs       1.1G  169M  902M  16% /boot
+tmpfs               tmpfs     103M   13k  103M   1% /run/user/1000
+/dev/sr0            iso9660   4.4G  4.4G     0 100% /mnt/cdrom
+/dev/mapper/vg0-lv0 ext4      1.6G   34M  1.5G   3% /mnt/lv0
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# pvcreate /dev/sdb5
+WARNING: linux_raid_member signature detected on /dev/sdb5 at offset 4096. Wipe it? [y/n]: y
+Wiping linux_raid_member signature on /dev/sdb5.
+Physical volume "/dev/sdb5" successfully created
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# mdadm --detail /dev/md0
+/dev/md0:
+Version : 1.2
+Creation Time : Mon Nov 21 09:15:38 2016
+Raid Level : raid5
+Array Size : 1046528 (1022.17 MiB 1071.64 MB)
+Used Dev Size : 523264 (511.09 MiB 535.82 MB)
+Raid Devices : 3
+Total Devices : 4
+Persistence : Superblock is persistent
+
+Update Time : Tue Nov 22 08:25:31 2016
+State : clean 
+Active Devices : 3
+Working Devices : 4
+Failed Devices : 0
+Spare Devices : 1
+
+Layout : left-symmetric
+Chunk Size : 512K
+
+Name : terrycentos:0  (local to host terrycentos)
+UUID : 7a61756c:bc5b53f4:fe22e61a:d6db4835
+Events : 38
+
+Number   Major   Minor   RaidDevice State
+3       8       24        0      active sync   /dev/sdb8
+1       8       22        1      active sync   /dev/sdb6
+4       8       23        2      active sync   /dev/sdb7
+
+5       8       25        -      spare   /dev/sdb9
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# pvdisplay
+--- Physical volume ---
+PV Name               /dev/md0
+VG Name               vg0
+PV Size               1022.00 MiB / not usable 2.00 MiB
+Allocatable           yes (but full)
+PE Size               4.00 MiB
+Total PE              255
+Free PE               0
+Allocated PE          255
+PV UUID               I1cQ5R-z4PK-4WPV-fKvl-m41D-y2pd-fdhMMf
+
+--- Physical volume ---
+PV Name               /dev/sdb1
+VG Name               vg0
+PV Size               1.00 GiB / not usable 4.00 MiB
+Allocatable           yes 
+PE Size               4.00 MiB
+Total PE              255
+Free PE               126
+Allocated PE          129
+PV UUID               N3ZSAe-fffr-WIOo-eT6D-3tLU-fsHI-0AdbdF
+
+--- Physical volume ---
+PV Name               /dev/sdb2
+VG Name               vg0
+PV Size               1.00 GiB / not usable 4.00 MiB
+Allocatable           yes 
+PE Size               4.00 MiB
+Total PE              255
+Free PE               255
+Allocated PE          0
+PV UUID               a0hGbN-HavD-TpsE-mTxF-ulc1-3UFU-BseZIF
+
+"/dev/sdb5" is a new physical volume of "512.00 MiB"
+--- NEW Physical volume ---
+PV Name               /dev/sdb5
+VG Name               
+PV Size               512.00 MiB
+Allocatable           NO
+PE Size               0   
+Total PE              0
+Free PE               0
+Allocated PE          0
+PV UUID               XeIktd-zgz8-EP9T-nFkZ-dPic-HyHv-kuhD2C
+
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# vgextend --help
+vgextend: Add physical volumes to a volume group
+
+vgextend
+[-A|--autobackup y|n]
+[--restoremissing]
+[--commandprofile ProfileName]
+[-d|--debug]
+[-f|--force]
+[-h|--help]
+[-t|--test]
+[-v|--verbose]
+[--version]
+[-y|--yes]
+[ PHYSICAL DEVICE OPTIONS ]
+VolumeGroupName PhysicalDevicePath [PhysicalDevicePath...]
+
+[root@terrycentos lv0]# vgs
+VG   #PV #LV #SN Attr   VSize VFree
+vg0    3   1   0 wz--n- 2.99g 1.49g
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# vgextend vg0 /dev/sdb5
+Volume group "vg0" successfully extended
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# vgs
+VG   #PV #LV #SN Attr   VSize VFree
+vg0    4   1   0 wz--n- 3.48g 1.98g
+[root@terrycentos lv0]# 
+[root@terrycentos lv0]# 
+
+
 ***************************************************************
 Account&ACL
 ****************************************************
@@ -266,6 +671,14 @@ UID/GID
 /etc/shadow
 groups
 newgrp
+
+sudo /etc/sudoers
+=================
+## Allow root to run any commands anywhere 
+root	ALL=(ALL) 	ALL
+## Allow terry to run any commands anywhere
+terry	ALL=(ALL)	ALL
+
 
 ****************************************************
 Vim
@@ -278,7 +691,7 @@ Daemon&service
 *****************************************************
 Stand_alone: httpd, vsftpd
 super daemon: client --> xinetd --> telnet
-              multi-thread/single-thread
+multi-thread/single-thread
 signal-control:cupsd
 interval-control:crond,atd
 daemons end with 'd'
@@ -288,3 +701,52 @@ port: /etc/services
 daemond path: /etc/init.d/*
 config:/etc/sysconfig/*
 xinetd: /etc/xinetd.conf, /etc/xinetd.d/*
+****************************************************
+RPM&YUM
+***************************************************
+YUM
+==============
+
+
+***************************************************
+Network
+***************************************************
+[root@terrycentos Desktop]# ifconfig eno16777736 192.168.1.20 netmask 255.255.255.0
+[root@terrycentos Desktop]# 
+[root@terrycentos Desktop]# route add default gw 192.168.1.1
+[root@terrycentos Desktop]# 
+[root@terrycentos Desktop]# ifconfig
+eno16777736: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+inet 192.168.1.20  netmask 255.255.255.0  broadcast 192.168.1.255
+ether 00:0c:29:0e:63:40  txqueuelen 1000  (Ethernet)
+RX packets 0  bytes 0 (0.0 B)
+RX errors 0  dropped 0  overruns 0  frame 0
+TX packets 0  bytes 0 (0.0 B)
+TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+inet 127.0.0.1  netmask 255.0.0.0
+inet6 ::1  prefixlen 128  scopeid 0x10<host>
+loop  txqueuelen 0  (Local Loopback)
+RX packets 340  bytes 27396 (26.7 KiB)
+RX errors 0  dropped 0  overruns 0  frame 0
+TX packets 340  bytes 27396 (26.7 KiB)
+TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+virbr0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255
+ether 00:00:00:00:00:00  txqueuelen 0  (Ethernet)
+RX packets 0  bytes 0 (0.0 B)
+RX errors 0  dropped 0  overruns 0  frame 0
+TX packets 0  bytes 0 (0.0 B)
+TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+[root@terrycentos Desktop]# 
+[root@terrycentos Desktop]# netstat  -r
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+default         192.168.1.1     0.0.0.0         UG        0 0          0 eno16777736
+192.168.1.0     0.0.0.0         255.255.255.0   U         0 0          0 eno16777736
+192.168.122.0   0.0.0.0         255.255.255.0   U         0 0          0 virbr0
+[root@terrycentos Desktop]# 
+
