@@ -701,6 +701,14 @@ port: /etc/services
 daemond path: /etc/init.d/*
 config:/etc/sysconfig/*
 xinetd: /etc/xinetd.conf, /etc/xinetd.d/*
+/var/run/*: pid
+
+stand_alone daemon operation:
+    service *** restart
+    /etc/init.d/*** restart
+super daemon:
+super daemon itself is a stand alone daemon
+
 ****************************************************
 RPM&YUM
 ***************************************************
@@ -750,3 +758,12 @@ default         192.168.1.1     0.0.0.0         UG        0 0          0 eno1677
 192.168.122.0   0.0.0.0         255.255.255.0   U         0 0          0 virbr0
 [root@terrycentos Desktop]# 
 
+NAT/Bridge
+----------
+http://blog.csdn.net/hzhsan/article/details/44098537/
+http://blog.chinaunix.net/uid-24876683-id-3593774.html
+http://blog.csdn.net/e3399/article/details/7560762
+
+Bridge: VMnet0
+NAT: VMnet8
+Host-only: VMnet1
