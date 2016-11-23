@@ -719,6 +719,7 @@ YUM
 ***************************************************
 Network
 ***************************************************
+##Old ifconifg
 [root@terrycentos Desktop]# ifconfig eno16777736 192.168.1.20 netmask 255.255.255.0
 [root@terrycentos Desktop]# 
 [root@terrycentos Desktop]# route add default gw 192.168.1.1
@@ -758,6 +759,10 @@ default         192.168.1.1     0.0.0.0         UG        0 0          0 eno1677
 192.168.122.0   0.0.0.0         255.255.255.0   U         0 0          0 virbr0
 [root@terrycentos Desktop]# 
 
+Network Manager:
+----------------
+
+
 NAT/Bridge
 ----------
 http://blog.csdn.net/hzhsan/article/details/44098537/
@@ -765,5 +770,28 @@ http://blog.chinaunix.net/uid-24876683-id-3593774.html
 http://blog.csdn.net/e3399/article/details/7560762
 
 Bridge: VMnet0
+--------------
 NAT: VMnet8
+
+[root@terrycentos network-scripts]# cat ifcfg-eno16777736
+TYPE=Ethernet
+BOOTPROTO=dhcp
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+#IPV4_FAILURE_FATAL=no
+#IPV6INIT=yes
+#IPV6_AUTOCONF=yes
+#IPV6_DEFROUTE=yes
+#IPV6_PEERDNS=yes
+#IPV6_PEERROUTES=yes
+#IPV6_FAILURE_FATAL=no
+NAME=eno16777736
+UUID=1603d8ce-977c-4aa0-95fa-c8962c38ad0c
+DEVICE=eno16777736
+ONBOOT=yes
+
+[root@terrycentos network-scripts]# systemctl restart network
+--------------
 Host-only: VMnet1
+-----------------
