@@ -706,8 +706,20 @@ xinetd: /etc/xinetd.conf, /etc/xinetd.d/*
 stand_alone daemon operation:
     service *** restart
     /etc/init.d/*** restart
-super daemon:
+super daemon: /etc/init.d/xinetd restart
+
 super daemon itself is a stand alone daemon
+
+all the services controlled by xinetd could config the firewall
+by /etc/hosts.allow,/etc/hosts.deny
+
+systemctl = service + chkconfig
+
+chkconfig:config the service that will start on system boot
+chkconfig --list
+chkconfig --level 5
+chkconfig --lvel 345 atd on
+
 
 ****************************************************
 RPM&YUM
@@ -768,6 +780,7 @@ NAT/Bridge
 http://blog.csdn.net/hzhsan/article/details/44098537/
 http://blog.chinaunix.net/uid-24876683-id-3593774.html
 http://blog.csdn.net/e3399/article/details/7560762
+http://blog.csdn.net/noob_f/article/details/51099040
 
 Bridge: VMnet0
 --------------
